@@ -29,7 +29,7 @@ from playwright.sync_api import sync_playwright
 
 # ==================== 配置区 ====================
 
-TARGET_DATE = datetime.date(2026, 10, 23)   # 你要的日期
+TARGET_DATE = datetime.date(2026, 10, 2)   # 你要的日期
 NUM_TICKETS = 2                            # 人数(仅提醒用)
 
 # 只监测这两种票，用意语标题关键词识别
