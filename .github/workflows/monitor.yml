@@ -1,0 +1,43 @@
+# GitHub Actions 定时监测梵蒂冈余票
+# 放置位置：仓库里的  .github/workflows/monitor.yml
+#
+# 作用：每隔几分钟自动跑一次 vatican_check_cloud.py，有票就微信推送。
+# 免费额度：公开仓库(public)的 Actions 完全免费、时长不限；建议用 public 仓库。
+
+name: Vatican Ticket Monitor
+
+on:
+  schedule:
+    # cron 是 UTC 时间。*/10 = 每 10 分钟一次。
+    # GitHub 定时任务最小间隔约 5 分钟，且高峰期可能延迟几分钟，属正常。
+    - cron: "*/10 * * * *"
+  workflow_dispatch:   # 允许在网页上手动点“Run workflow”立即跑一次(用于测试)
+
+# 避免上一次还没跑完又开新的
+concurrency:
+  group: vatican-monitor
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+
+      - name: 安装 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 安装依赖
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          python -m playwright install --with-deps chromium
+
+      - name: 运行监测
+        env:
+          PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
+        run: python vatican_check_cloud.py
