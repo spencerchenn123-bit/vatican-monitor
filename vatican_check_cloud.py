@@ -177,7 +177,7 @@ def main():
             except Exception:
                 pass
 
-    if True:
+    if available:
         detail = "<br>".join(results)
         push_wechat(
             "🎫 梵蒂冈有票了！",
